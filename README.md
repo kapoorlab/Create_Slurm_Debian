@@ -96,14 +96,14 @@ $
 $ wget https://download.schedmd.com/slurm/slurm-23.02.0.tar.bz2
 $ tar xvjf slurm-23.02.0.tar.bz2
 $ cd slurm-23.02.0
-$ ./configure --prefix=/tmp/slurm-build --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm
+$ ./configure --prefix=/tmp/slurm-build --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm --with-hdf5=no
 $ make
 $ make contrib
 $ make install
 $ cd ..
-$ fpm -s dir -t deb -v 1.0 -n slurm-17.11.12 --prefix=/usr -C /tmp/slurm-build .
-$ dpkg -i slurm-17.11.12_1.0_amd64.deb
-$ useradd slurm 
+$ fpm -s dir -t deb -v 1.0 -n slurm-23.02.0 --prefix=/usr -C /tmp/slurm-build .
+$ dpkg -i slurm-23.02.0_1.0_amd64.deb
+$ sudo useradd slurm 
 $ mkdir -p /etc/slurm /etc/slurm/prolog.d /etc/slurm/epilog.d /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
 $ chown slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
 ```
@@ -111,9 +111,9 @@ $ chown slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
 
 ```console
 Copy into place config files from this repo which you've already cloned into /storage
-$ cd /storage
-$ cp ubuntu-slurm/slurmdbd.service /etc/systemd/system/
-$ cp ubuntu-slurm/slurmctld.service /etc/systemd/system/
+$ 
+$ cp slurmdbd.service /etc/systemd/system/
+$ cp slurmctld.service /etc/systemd/system/
 ```
 
 
