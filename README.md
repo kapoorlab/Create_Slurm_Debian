@@ -42,7 +42,7 @@ $ sudo make install
 $ sudo systemctl enable munge.service
 $ sudo systemctl start munge.service
 The munge.key file is located in /etc/munge/munge.key and has the UID and GID of the nologin user munge
-Test if all is running well
+
 
 ```
 
