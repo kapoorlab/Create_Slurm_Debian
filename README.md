@@ -3,6 +3,8 @@ Create a Slurm machine on Debian
 
 ## Overview
 
+
+
 Slurm overview: https://slurm.schedmd.com/overview.html
 
 > Slurm is an open source, fault-tolerant, and highly scalable cluster management and job scheduling system for large and small Linux clusters. Slurm requires no kernel modifications for its operation and is relatively self-contained. As a cluster workload manager, Slurm has three key functions. First, it allocates exclusive and/or non-exclusive access to resources (compute nodes) to users for some duration of time so they can perform work. Second, it provides a framework for starting, executing, and monitoring work (normally a parallel job) on the set of allocated nodes. Finally, it arbitrates contention for resources by managing a queue of pending work. Optional plugins can be used for accounting, advanced reservation, gang scheduling (time sharing for parallel jobs), backfill scheduling, topology optimized resource selection, resource limits by user or bank account, and sophisticated multifactor job prioritization algorithms.
@@ -11,10 +13,10 @@ This guide provides the steps to install a slurm controller node as well as a si
 The following steps make the follwing assumptions.
 * OS: Debian GNU/Linux 11 (bullseye)
 * Slurm controller node hostname: slurm-ctrl
-* Non-root user: myuser
-* Compute node hostname: linux1
+* Non-root user: debian
+* Compute node hostname: kabru
 * Slurm DB Password: slurmdbpass
-* Passwordless SSH is working between slurm-ctrl and linux1
+* Passwordless SSH is working between slurm-ctrl and kabru
 * There is shared storage between all the nodes: /storage & /home
 * The UIDs and GIDs will be consistent between all the nodes.
 * Slurm will be used to control SSH access to compute nodes.
@@ -35,17 +37,6 @@ $ gem install fpm
 
 
 
-### Copy git repo
-```console
-$ git clone https://github.com/mknoxnv/ubuntu-slurm.git
-```
-
-Customize slurm.conf with your slurm controller and compute node hostnames:
-```console
-$ vi ubuntu-slurm/slurm.conf
-ControlMachine=slurm-ctrl
-NodeName=linux1 (you can specify a range of nodes here, for example: linux[1-10])
-```
 
 ### Install munge
 MUNGE (MUNGE Uid 'N' Gid Emporium) is an authentication service for creating and validating credentials.
@@ -53,7 +44,17 @@ https://dun.github.io/munge/
 
 
 ```console
-$ apt-get install libmunge-dev libmunge2 munge
+$ wget https://github.com/dun/munge/releases/download/munge-0.5.15/munge-0.5.15.tar.xz
+$ tar xJf munge-0.5.15.tar.xz
+$ cd munge-0.5.15
+$ ./configure \
+   --prefix=/usr \
+   --sysconfdir=/etc \
+   --localstatedir=/var \
+   --runstatedir=/run
+$ make
+$ make check
+$ sudo make install
 $ systemctl enable munge
 $ systemctl start munge
 ```
@@ -78,10 +79,10 @@ $ systemctl enable mysql
 $ systemctl start mysql
 $ mysql -u root
 create database slurm_acct_db;
-create user 'slurm'@'localhost';
-set password for 'slurm'@'localhost' = password('slurmdbpass');
-grant usage on *.* to 'slurm'@'localhost';
-grant all privileges on slurm_acct_db.* to 'slurm'@'localhost';
+create user 'debian'@'kapoorlabs.fr';
+set password for 'debian'@'kapoorlabs.fr' = password('slurmdbpass');
+grant usage on *.* to 'debian'@'kapoorlabs.fr';
+grant all privileges on slurm_acct_db.* to 'debian'@'kapoorlabs.fr';
 flush privileges;
 exit
 ```
@@ -89,28 +90,28 @@ exit
 
 
 ### Download, build, and install Slurm
-Download tar.bz2 from https://www.schedmd.com/downloads.php to /storage
+Download tar.bz2 from https://www.schedmd.com/downloads.php 
 
 ```console
 $ 
 $ wget https://download.schedmd.com/slurm/slurm-23.02.0.tar.bz2
 $ tar xvjf slurm-23.02.0.tar.bz2
 $ cd slurm-23.02.0
-$ ./configure --prefix=/tmp/slurm-build --sysconfdir=/etc/slurm --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm --with-hdf5=no
+$ ./configure --prefix=/tmp/slurm-build --sysconfdir=/etc/debian --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm --with-hdf5=no
 $ make
 $ make contrib
 $ make install
 $ cd ..
 $ fpm -s dir -t deb -v 1.0 -n slurm-23.02.0 --prefix=/usr -C /tmp/slurm-build .
 $ dpkg -i slurm-23.02.0_1.0_amd64.deb
-$ sudo useradd slurm 
-$ mkdir -p /etc/slurm /etc/slurm/prolog.d /etc/slurm/epilog.d /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
-$ chown slurm /var/spool/slurm/ctld /var/spool/slurm/d /var/log/slurm
+$ 
+$ mkdir -p /etc/debian /etc/debian/prolog.d /etc/debian/epilog.d /var/spool/debian/ctld /var/spool/debian/d /var/log/debian
+$ chown debian /var/spool/debian/ctld /var/spool/debian/d /var/log/debian
 ```
 
 
 ```console
-Copy into place config files from this repo which you've already cloned into /storage
+Copy into place config files from this repo which you've already cloned into 
 $ 
 $ cp slurmdbd.service /etc/systemd/system/
 $ cp slurmctld.service /etc/systemd/system/
@@ -125,8 +126,15 @@ $ systemctl enable slurmdbd
 $ systemctl start slurmdbd
 $ systemctl enable slurmctld
 $ systemctl start slurmctld
+$ systemctl start slurmdbd
 ```
 
+## Open a port
+```console
+$ check if port is being used: netstat -na | grep:6819
+$ sudo ufw allow 6819/firewall-cmd --add-port=6819/tcp
+$ Test if port is open: ls | nc -l -p 6819
+```
 
 
 ## Create initial slurm cluster, account, and user.
