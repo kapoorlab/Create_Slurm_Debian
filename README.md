@@ -95,16 +95,11 @@ $
 $ wget https://download.schedmd.com/slurm/slurm-23.02.0.tar.bz2
 $ tar xvjf slurm-23.02.0.tar.bz2
 $ cd slurm-23.02.0
-$ ./configure --prefix=/tmp/slurm-build --sysconfdir=/etc/debian --enable-pam --with-pam_dir=/lib/x86_64-linux-gnu/security/ --without-shared-libslurm --with-hdf5=no
+$ ./configure --with-hdf5=no
 $ make
-$ make contrib
 $ make install
-$ cd ..
-$ fpm -s dir -t deb -v 1.0 -n slurm-23.02.0 --prefix=/usr -C /tmp/slurm-build .
-$ dpkg -i slurm-23.02.0_1.0_amd64.deb
-$ 
-$ mkdir -p /etc/debian /etc/debian/prolog.d /etc/debian/epilog.d /var/spool/debian/ctld /var/spool/debian/d /var/log/debian
-$ chown debian /var/spool/debian/ctld /var/spool/debian/d /var/log/debian
+
+Create a slurm configuration file with https://slurm.schedmd.com/configurator.html
 ```
 
 
