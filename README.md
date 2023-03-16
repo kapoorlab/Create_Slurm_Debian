@@ -39,15 +39,29 @@ $ ./configure \
 $ make
 $ make check
 $ sudo make install
-$ systemctl enable munge
-$ systemctl start munge
+$ sudo systemctl enable munge.service
+$ sudo systemctl start munge.service
+The munge.key file is located in /etc/munge/munge.key and has the UID and GID of the nologin user munge
+Test if all is running well
+
 ```
 
 
 ### Test munge
 ```console
-$ munge -n | unmunge | grep STATUS
-STATUS:           Success (0)
+$ munge -n | unmunge
+(base) debian@kapoorlabs:~$ munge -n | unmunge
+STATUS:          Success (0)
+ENCODE_HOST:     kapoorlabs.fr (51.210.158.171)
+ENCODE_TIME:     2023-03-16 18:45:14 +0000 (1678992314)
+DECODE_TIME:     2023-03-16 18:45:14 +0000 (1678992314)
+TTL:             300
+CIPHER:          aes128 (4)
+MAC:             sha256 (5)
+ZIP:             none (0)
+UID:             debian (1000)
+GID:             debian (1000)
+LENGTH:          0
 ```
 
 ### Install MariaDB for Slurm accounting
