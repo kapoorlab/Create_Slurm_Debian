@@ -9,22 +9,8 @@ Slurm overview: https://slurm.schedmd.com/overview.html
 
 > Slurm is an open source, fault-tolerant, and highly scalable cluster management and job scheduling system for large and small Linux clusters. Slurm requires no kernel modifications for its operation and is relatively self-contained. As a cluster workload manager, Slurm has three key functions. First, it allocates exclusive and/or non-exclusive access to resources (compute nodes) to users for some duration of time so they can perform work. Second, it provides a framework for starting, executing, and monitoring work (normally a parallel job) on the set of allocated nodes. Finally, it arbitrates contention for resources by managing a queue of pending work. Optional plugins can be used for accounting, advanced reservation, gang scheduling (time sharing for parallel jobs), backfill scheduling, topology optimized resource selection, resource limits by user or bank account, and sophisticated multifactor job prioritization algorithms.
 
-This guide provides the steps to install a slurm controller node as well as a single compute node.  
-The following steps make the follwing assumptions.
-* OS: Debian GNU/Linux 11 (bullseye)
-* Slurm controller node hostname: slurm-ctrl
-* Non-root user: debian
-* Compute node hostname: kabru
-* Slurm DB Password: slurmdbpass
-* Passwordless SSH is working between slurm-ctrl and kabru
-* There is shared storage between all the nodes: /storage & /home
-* The UIDs and GIDs will be consistent between all the nodes.
-* Slurm will be used to control SSH access to compute nodes.
-* Compute nodes are DNS resolvable.
-* Compute nodes have GPUs and the latest CUDA drivers installed
 
-The slurm controller node (slurm-ctrl) does not need to be a physical piece of hardware.  A VM is fine.  However, this node will be used by users for compiling codes and as such it should have the same OS and libraries (such as CUDA) that exist on the compute nodes.
-
+# Run the commands as non priviliged user
 ## Install slurm and associated components on slurm controller node.
 Install prerequisites 
 
@@ -34,8 +20,6 @@ $ apt-get update
 $ apt-get install git gcc make ruby ruby-dev libpam0g-dev libmariadb-dev-compat libmariadb-dev
 $ gem install fpm
 ```
-
-
 
 
 ### Install munge
