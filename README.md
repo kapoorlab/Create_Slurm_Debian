@@ -103,9 +103,11 @@ Create a slurm configuration file with https://slurm.schedmd.com/configurator.ht
 
 ## Open a port
 ```console
-$ check if port is being used: netstat -na | grep:6819
+check if port is being used: 
+$ netstat -na | grep:6819
 $ sudo ufw allow 6819/firewall-cmd --add-port=6819/tcp
-$ Test if port is open: ls | nc -l -p 6819
+Test if port is open: 
+$ ls | nc -l -p 6819
 ```
 
 
