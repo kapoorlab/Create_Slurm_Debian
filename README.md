@@ -98,10 +98,8 @@ $ cd slurm-23.02.0
 $ ./configure --with-hdf5=no
 $ make
 $ make install
-
-Create a slurm configuration file with https://slurm.schedmd.com/configurator.html
 ```
-
+Create a slurm configuration file with https://slurm.schedmd.com/configurator.html
 
 ## Open a port
 ```console
